@@ -17,8 +17,10 @@ typedef struct {
 
 void addStock();
 void searchStock();
+void modifyStock();
 void displayStock();
 int validDate(int day,int month,int year);
+void title();
 
 void main() {
 	int select;
@@ -57,15 +59,7 @@ void main() {
 
 int validDate(int day, int month, int year) {
 
-	if (day < 1 || day > 31) {
-		return 0;
-	}
-
-	if (month < 1 || month > 12) {
-		return 0;
-	}
-
-	if (year < 1900 || year > 9999) {
+	if ((day < 1 || day > 31) || (month < 1 || month > 12) || (year < 1900 || year > 9999)) {
 		return 0;
 	}
 
@@ -90,6 +84,13 @@ int validDate(int day, int month, int year) {
 
 	return 1;
 }
+
+void title() {
+
+	printf("\n%10s  %20s  %10s  %10s  %10s  %10s  %10s\n", "STOCK CODE", "STOCK NAME", "QUANTITY", "MINIMUM", "REORDER", "PRICE", "DATE");
+	printf("%10s  %20s  %10s  %10s  %10s  %10s  %10s\n", "==========", "====================", "==========", "==========", "==========", "==========", "==========");
+
+};
 
 void addStock() {
 	FILE* fptr = fopen(FILE_NAME, "ab");
@@ -187,8 +188,7 @@ void searchStock() {
 			rewind(stdin);
 			gets(code);
 
-			printf("\n%10s  %20s  %10s  %10s  %10s  %10s  %10s\n", "STOCK CODE", "STOCK NAME", "QUANTITY", "MINIMUM", "REORDER", "PRICE", "DATE");
-			printf("%10s  %20s  %10s  %10s  %10s  %10s  %10s\n", "==========", "====================", "==========", "==========", "==========", "==========", "==========");
+			title();
 
 			while (fread(&s, sizeof(s), 1, fptr)) {
 				if (strcmp(code, s.stockCode) == 0) {
@@ -215,8 +215,7 @@ void searchStock() {
 				}
 			} while (validDate(day, month, year) != 1);
 
-			printf("\n%10s  %20s  %10s  %10s  %10s  %10s  %10s\n", "STOCK CODE", "STOCK NAME", "QUANTITY", "MINIMUM", "REORDER", "PRICE", "DATE");
-			printf("%10s  %20s  %10s  %10s  %10s  %10s  %10s\n", "==========", "====================", "==========", "==========", "==========", "==========", "==========");
+			title();
 
 			while (fread(&s, sizeof(s), 1, fptr)) {
 				if (day == s.d.day && month == s.d.month && year == s.d.year) {
@@ -240,6 +239,100 @@ void searchStock() {
 	fclose(fptr);
 }
 
+void modifyStock() {
+	FILE* rptr = fopen(FILE_NAME, "rb");
+
+	if (rptr == NULL) {
+		printf("\nInvalid file\n");
+		return;
+	}
+
+	Stock s[1000];
+	int scount = 0;
+
+	while (fread(s, sizeof(s), 1, rptr)) {
+		scount++;
+	}
+
+	fclose(rptr);
+
+	char code[6], name[20], yesno;
+	int day, month, year, min, reorder, option;
+	float price;
+
+	printf("Please enter the stock code :");
+	rewind(stdin);
+	gets(code);
+
+	for (int i = 0; i < scount; i++) {
+		if (strcmp(code, s[i].stockCode) == 0) {
+			title();
+			printf("%10s  %20s  %10d  %10d  %10d  %10.2lf  %02d/%02d/%04d\n", s[i].stockCode, s[i].stockName, s[i].stockQuantity, s[i].stockMinimum, s[i].stockReorder, s[i].stockPrice, s[i].d.day, s[i].d.month, s[i].d.year);
+
+			printf("\n1. Stock name\n");
+			printf("2. Stock minimum quantity\n");
+			printf("3. Stock quamtity reorder\n");
+			printf("4. Stock price\n");
+			printf("5. Stock date added record\n");
+			printf("6. Exit\n");
+			printf("Please select the data you want to modify :");
+			rewind(stdin);
+			scanf("%d", &option);
+
+			switch (option) {
+			case 1 :
+				printf("Stock name : %s\n", s[i].stockName);
+				printf("Please enter the new name :");
+				rewind(stdin);
+				gets(name);
+
+				do {
+					printf("Are you confirm to modify (y/n) ?");
+					rewind(stdin);
+					yesno = tolower(getchar());
+
+					if (yesno == 'y') {
+						strcpy(s[i].stockName, name);
+						printf("\nRecord change\n");
+					}
+					else if (yesno == 'n') {
+						printf("\nRecord no changes\n");
+					}
+					else {
+						printf("\nInvalid answer\n");
+					}
+				} while (yesno != 'y' && yesno != 'n');
+
+			case 2:
+				printf("Stock minimum quantity : %d\n", s[i].stockMinimum);
+				printf("Please enter new minimum quantity :");
+				rewind(stdin);
+				scanf("%d", min);
+
+				do {
+					printf("Are you confirm to modify (y/n) ?");
+					rewind(stdin);
+					yesno = tolower(getchar());
+
+					if (yesno == 'y') {
+						s[i].stockMinimum = min;
+						printf("\nRecord change\n");
+					}
+					else if (yesno == 'n') {
+						printf("\nRecord no changes\n");
+					}
+					else {
+						printf("\nInvalid answer\n");
+					}
+				} while (yesno != 'y' && yesno != 'n');
+			}
+		}
+		else {
+			printf("\nInvalid Code\n");
+		}
+	}
+}
+
 void displayStock() {
 	FILE* fptr = fopen(FILE_NAME, "rb");
 
@@ -250,8 +343,8 @@ void displayStock() {
 
 	Stock s;
 
-	printf("\n%10s  %20s  %10s  %10s  %10s  %10s  %10s\n", "STOCK CODE", "STOCK NAME", "QUANTITY", "MINIMUM", "REORDER", "PRICE", "DATE");
-	printf("%10s  %20s  %10s  %10s  %10s  %10s  %10s\n", "==========", "====================", "==========", "==========", "==========", "==========", "==========");
+	title();
+
 	while (fread(&s, sizeof(s), 1, fptr)) {
 		printf("%10s  %20s  %10d  %10d  %10d  %10.2lf  %02d/%02d/%04d\n", s.stockCode,s.stockName, s.stockQuantity, s.stockMinimum, s.stockReorder, s.stockPrice, s.d.day,s.d.month,s.d.year);
 	}
