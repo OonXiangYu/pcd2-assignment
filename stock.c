@@ -22,6 +22,7 @@ void displayStock();
 
 //subs function
 int validDate(int day,int month,int year);
+int validRepeat(char name[20]);
 void title();
 
 void main() {
@@ -90,6 +91,24 @@ int validDate(int day, int month, int year) {
 	return 1;
 }
 
+int validRepeat(char name[20]) {
+	FILE* fptr = fopen(FILE_NAME, "rb");
+	Stock s;
+
+	if (fptr == NULL) {
+		exit(-1);
+	}
+
+	while (fread(&s, sizeof(s), 1, fptr)) {
+		if (strcmp(name, s.stockName) == 0 || strcmp(name, s.stockCode) == 0) {
+			return 1;
+		}
+	}
+	fclose(fptr);
+
+	return 2;
+}
+
 void title() {
 
 	printf("\n%10s  %20s  %10s  %10s  %10s  %10s  %10s\n", "STOCK CODE", "STOCK NAME", "QUANTITY", "MINIMUM", "REORDER", "PRICE", "DATE");
@@ -105,12 +124,29 @@ void addStock() {
 	char continueAdd, sure;
 
 	do {
+		do {
 			printf("\nPlease enter stock code :");
 			rewind(stdin);
 			gets(s.stockCode);
+			if (validRepeat(s.stockCode) == 1) {
+				printf("\nStock Code is exist\n");
+			}
+			else if (validRepeat(s.stockCode) == 2) {
+				printf("\nStock Code valid\n");
+			}
+		} while (validRepeat(s.stockCode) == 1);
+
+		do {
 			printf("Please enter stock name :");
 			rewind(stdin);
 			gets(s.stockName);
+			if (validRepeat(s.stockName) == 1) {
+				printf("\nStock Name is exist\n");
+			}
+			else if (validRepeat(s.stockName) == 2) {
+				printf("\nStock Name valid\n");
+			}
+		} while (validRepeat(s.stockName) == 1);
 
 		printf("Please enter stock quantity order :");
 		rewind(stdin);
@@ -246,112 +282,206 @@ void searchStock() {
 }
 
 void modifyStock() {
+
+	Stock s[1000];
+	int scount = 0;
+
 	FILE* rptr = fopen(FILE_NAME, "rb");
 
 	if (rptr == NULL) {
 		printf("\nInvalid file\n");
-		return;
+		exit(-1);
 	}
 
-	Stock s[1000];
-
-	int scount = 0;
-
-	while (fread(&s[scount], sizeof(s[scount]), 1, rptr)) {
+	while (fread(&s[scount], sizeof(s[scount]), 1, rptr) == 1) {
 		scount++;
 	}
 
 	fclose(rptr);
 
-	char code[6], name[20], yesno;
+	char code[6], nname[20], yesno;
 	int day, month, year, min, reorder, option, con = 0;
 	float price;
 
-	do {
 		printf("Please enter the stock code :");
 		rewind(stdin);
 		gets(code);
 
-		for (int i = 0; i < scount; i++) {
-			if (strcmp(code, s[i].stockCode) == 0) {
-				title();
-				printf("%10s  %20s  %10d  %10d  %10d  %10.2lf  %02d/%02d/%04d\n", s[i].stockCode, s[i].stockName, s[i].stockQuantity, s[i].stockMinimum, s[i].stockReorder, s[i].stockPrice, s[i].d.day, s[i].d.month, s[i].d.year);
-				do {
-					printf("\n1. Stock name\n");
-					printf("2. Stock minimum quantity\n");
-					printf("3. Stock quamtity reorder\n");
-					printf("4. Stock price\n");
-					printf("5. Stock date added record\n");
-					printf("6. Exit\n");
-					printf("Please select the data you want to modify :");
-					rewind(stdin);
-					scanf("%d", &option);
-
-					switch (option) {
-					case 1:
-						printf("Stock name : %s\n", s[i].stockName);
-						printf("Please enter the new name :");
+		do {
+			for (int i = 0; i < scount; i++) {
+				if (strcmp(code, s[i].stockCode) == 0) {
+					title();
+					printf("%10s  %20s  %10d  %10d  %10d  %10.2lf  %02d/%02d/%04d\n", s[i].stockCode, s[i].stockName, s[i].stockQuantity, s[i].stockMinimum, s[i].stockReorder, s[i].stockPrice, s[i].d.day, s[i].d.month, s[i].d.year);
+					do {
+						printf("\n1. Stock name\n");
+						printf("2. Stock minimum quantity\n");
+						printf("3. Stock quantity reorder\n");
+						printf("4. Stock price\n");
+						printf("5. Stock date added record\n");
+						printf("6. Exit\n");
+						printf("Please select the data you want to modify :");
 						rewind(stdin);
-						gets(name);
+						scanf("%d", &option);
 
-						do {
-							printf("Are you confirm to modify (y/n) ?");
+						switch (option) {
+						case 1:
+							do {
+								printf("Stock name : %s\n", s[i].stockName);
+								printf("Please enter the new name :");
+								rewind(stdin);
+								gets(nname);
+								if (validRepeat(nname) == 1) {
+									printf("\nStock Name is exist\n");
+								}
+								else if (validRepeat(nname) == 2) {
+									printf("\nStock Name valid\n");
+								}
+							} while (validRepeat(nname) == 1);
+
+							do {
+								printf("Are you confirm to modify (y/n) ?");
+								rewind(stdin);
+								yesno = tolower(getchar());
+
+								if (yesno == 'y') {
+									strcpy(s[i].stockName, nname);
+									printf("\nRecord change\n");
+									FILE* wptr = fopen(FILE_NAME, "wb");
+									fwrite(&s, sizeof(Stock), scount, wptr);
+									fclose(wptr);
+								}
+								else if (yesno == 'n') {
+									printf("\nRecord no changes\n");
+								}
+								else {
+									printf("\nInvalid answer\n");
+								}
+							} while (yesno != 'y' && yesno != 'n');
+							break;
+
+						case 2:
+							printf("Stock minimum quantity : %d\n", s[i].stockMinimum);
+							printf("Please enter new minimum quantity :");
 							rewind(stdin);
-							yesno = tolower(getchar());
+							scanf("%d", &min);
 
-							if (yesno == 'y') {
-								strcpy(s[i].stockName, name);
-								printf("\nRecord change\n");
-							}
-							else if (yesno == 'n') {
-								printf("\nRecord no changes\n");
-							}
-							else {
-								printf("\nInvalid answer\n");
-							}
-						} while (yesno != 'y' && yesno != 'n');
-						break;
+							do {
+								printf("Are you confirm to modify (y/n) ?");
+								rewind(stdin);
+								yesno = tolower(getchar());
 
-					case 2:
-						printf("Stock minimum quantity : %d\n", s[i].stockMinimum);
-						printf("Please enter new minimum quantity :");
-						rewind(stdin);
-						scanf("%d", &min);
-
-						do {
-							printf("Are you confirm to modify (y/n) ?");
+								if (yesno == 'y') {
+									s[i].stockMinimum = min;
+									printf("\nRecord change\n");
+									FILE* wptr = fopen(FILE_NAME, "wb");
+									fwrite(&s, sizeof(Stock), scount, wptr);
+									fclose(wptr);
+								}
+								else if (yesno == 'n') {
+									printf("\nRecord no changes\n");
+								}
+								else {
+									printf("\nInvalid answer\n");
+								}
+							} while (yesno != 'y' && yesno != 'n');
+							break;
+						case 3:
+							printf("Stock reorder quantity : %d\n", s[i].stockReorder);
+							printf("Please enter new reorder quantity :");
 							rewind(stdin);
-							yesno = tolower(getchar());
+							scanf("%d", &reorder);
+							do {
+								printf("Are you confirm to modify (y/n) ?");
+								rewind(stdin);
+								yesno = tolower(getchar());
 
-							if (yesno == 'y') {
-								s[i].stockMinimum = min;
-								printf("\nRecord change\n");
-							}
-							else if (yesno == 'n') {
-								printf("\nRecord no changes\n");
-							}
-							else {
-								printf("\nInvalid answer\n");
-							}
-						} while (yesno != 'y' && yesno != 'n');
-						break;
-					case 6:
-						return;
-						break;
-					}
-				} while (option != 6);
-			}
-			else {
-				printf("\nInvalid Code\n");
-				con++;
-				break;
-			}
-		}
-	} while (con != 0);
+								if (yesno == 'y') {
+									s[i].stockReorder = reorder;
+									printf("\nRecord change\n");
+									FILE* wptr = fopen(FILE_NAME, "wb");
+									fwrite(&s, sizeof(Stock), scount, wptr);
+									fclose(wptr);
+								}
+								else if (yesno == 'n') {
+									printf("\nRecord no changes\n");
+								}
+								else {
+									printf("\nInvalid answer\n");
+								}
+							} while (yesno != 'y' && yesno != 'n');
+							break;
+						case 4:
+							printf("Stock price : %.2lf\n", s[i].stockPrice);
+							printf("Please enter new price :");
+							rewind(stdin);
+							scanf("%f", &price);
+							do {
+								printf("Are you confirm to modify (y/n) ?");
+								rewind(stdin);
+								yesno = tolower(getchar());
 
-	FILE* wptr = fopen(FILE_NAME,"wb");
-	fwrite(&s, sizeof(Stock), scount, wptr);
-	fclose(wptr);
+								if (yesno == 'y') {
+									s[i].stockPrice = price;
+									printf("\nRecord change\n");
+									FILE* wptr = fopen(FILE_NAME, "wb");
+									fwrite(&s, sizeof(Stock), scount, wptr);
+									fclose(wptr);
+								}
+								else if (yesno == 'n') {
+									printf("\nRecord no changes\n");
+								}
+								else {
+									printf("\nInvalid answer\n");
+								}
+							} while (yesno != 'y' && yesno != 'n');
+							break;
+						case 5:
+							do {
+								printf("Lastest record updated date : %02d/%02d/%04d\n", s[i].d.day, s[i].d.month, s[i].d.year);
+								printf("Please enter lastest date modify reocrd :");
+								rewind(stdin);
+								scanf("%d/%d/%d", &day, &month, &year);
+								if (validDate(day, month, year) == 1) {
+									printf("\nValid date\n");
+								}
+								else {
+									printf("\nInvalid date\n");
+								}
+							} while (validDate(day, month, year) != 1);
+
+							do {
+								printf("Are you confirm to modify (y/n) ?");
+								rewind(stdin);
+								yesno = tolower(getchar());
+
+								if (yesno == 'y') {
+									s[i].d.day = day;
+									s[i].d.month = month;
+									s[i].d.year = year;
+									printf("\nRecord change\n");
+									FILE* wptr = fopen(FILE_NAME, "wb");
+									fwrite(&s, sizeof(Stock), scount, wptr);
+									fclose(wptr);
+								}
+								else if (yesno == 'n') {
+									printf("\nRecord no changes\n");
+								}
+								else {
+									printf("\nInvalid answer\n");
+								}
+							} while (yesno != 'y' && yesno != 'n');
+							break;
+						case 6:
+							return;
+							break;
+						}
+					} while (option != 6);
+				}
+				else {
+					con++;
+				}
+			}
+		} while (con != 0);
 }
 
 void displayStock() {
