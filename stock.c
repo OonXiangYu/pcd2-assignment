@@ -213,13 +213,15 @@ void searchStock() {
 	}
 
 	Stock s;
-	int select, day, month, year, count = 0;
+	int select, day, month, year;
 	char code[6];
+	double lprice, hprice;
 
 	do{
 	printf("\n1. Search by Stock ID\n");
 	printf("2. Search by Date\n");
-	printf("3. Exit\n");
+	printf("3. Search by Price\n");
+	printf("4. Exit\n");
 
 		printf("\nPlease enter your Option :");
 		rewind(stdin);
@@ -235,14 +237,8 @@ void searchStock() {
 			while (fread(&s, sizeof(s), 1, fptr)) {
 				if (strcmp(code, s.stockCode) == 0) {
 					printf("%10s  %20s  %10d  %10d  %10d  %10.2lf  %02d/%02d/%04d\n", s.stockCode, s.stockName, s.stockQuantity, s.stockMinimum, s.stockReorder, s.stockPrice, s.d.day, s.d.month, s.d.year);
-					count++;
 				}
 			}
-
-			if (count == 0) {
-				printf("\nNo record\n");
-			}
-
 		}
 		else if (select == 2) {
 			do {
@@ -262,21 +258,40 @@ void searchStock() {
 			while (fread(&s, sizeof(s), 1, fptr)) {
 				if (day == s.d.day && month == s.d.month && year == s.d.year) {
 					printf("%10s  %20s  %10d  %10d  %10d  %10.2lf  %02d/%02d/%04d\n", s.stockCode, s.stockName, s.stockQuantity, s.stockMinimum, s.stockReorder, s.stockPrice, s.d.day, s.d.month, s.d.year);
-					count++;
 				}
 			}
+		}
+		else if (select == 3) {
+			
+			do {
+				printf("Please enter the price range\n");
+				printf("min >");
+				rewind(stdin);
+				scanf("%lf", &lprice);
+				printf("max >");
+				rewind(stdin);
+				scanf("%lf", &hprice);
 
-			if (count == 0) {
-				printf("\nNo record\n");
+				if (lprice > hprice) {
+					printf("\nMin price cant higher than Max price\n");
+				}
+			} while (lprice > hprice);
+
+			title();
+
+			while (fread(&s, sizeof(s), 1, fptr)) {
+				if (s.stockPrice >= lprice && s.stockPrice <= hprice) {
+					printf("%10s  %20s  %10d  %10d  %10d  %10.2lf  %02d/%02d/%04d\n", s.stockCode, s.stockName, s.stockQuantity, s.stockMinimum, s.stockReorder, s.stockPrice, s.d.day, s.d.month, s.d.year);
+				}
 			}
 		}
-		else if (select == 3){
+		else if (select == 4){
 			return;
 		}
 		else {
 			printf("\nInvalid answer\n");
 		}
-	} while (select != 1 || select != 2 || select != 3);
+	} while (select != 1 || select != 2 || select != 3 || select != 4);
 
 	fclose(fptr);
 }
@@ -302,12 +317,10 @@ void modifyStock() {
 	char code[6], nname[20], yesno;
 	int day, month, year, min, reorder, option, con = 0;
 	float price;
-
+	do{
 		printf("Please enter the stock code :");
 		rewind(stdin);
 		gets(code);
-
-		do {
 			for (int i = 0; i < scount; i++) {
 				if (strcmp(code, s[i].stockCode) == 0) {
 					title();
@@ -481,7 +494,10 @@ void modifyStock() {
 					con++;
 				}
 			}
-		} while (con != 0);
+			if (con != 0) {
+				printf("\nInvalid Code\n");
+			}
+	} while (con != 0);
 }
 
 void displayStock() {
