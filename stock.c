@@ -2,6 +2,8 @@
 #include<stdlib.h>
 #include<ctype.h>
 #include<string.h>
+#include <time.h>
+#include <windows.h>
 #pragma warning(disable:4996)
 #define FILE_NAME "stock.dat"
 
@@ -20,6 +22,7 @@ void addStock();
 void searchStock(Stock s[],int);
 void modifyStock();
 void displayStock(Stock s[], int);
+void reportStock(Stock s[], int);
 
 //subs function
 int validDate(int day,int month,int year);
@@ -145,11 +148,12 @@ void main() {
 		printf("2. Search Record\n");
 		printf("3. Modify Record\n");
 		printf("4. Display Record\n");
+		printf("6. Report\n");
 		printf("7. Exit\n");
 		printf("Please enter your option :");
 		rewind(stdin);
 		scanf("%d", &select);
-		if (select == 1 || select == 2 || select == 3 || select == 4) {
+		if (select == 1 || select == 2 || select == 3 || select == 4 || select == 6) {
 			switch (select) {
 			case 1:
 				addStock();
@@ -165,6 +169,9 @@ void main() {
 				for (int i = 0; i < size; i++) {
 					displayStock(s, i);
 				}
+				break;
+			case 6:
+				reportStock(s, size);
 				break;
 			}
 		}
@@ -183,7 +190,7 @@ void addStock() {
 	Stock s;
 	char continueAdd, sure, code[6], yesno;
 	double price;
-	
+
 	do {
 		do {
 			printf("\nPlease enter stock code (A0001):");
@@ -715,4 +722,38 @@ void modifyStock() {
 						printf("\nInvalid format\n");
 						}
 					}while (con!=0);
+}
+
+void reportStock(Stock s[], int size) {
+	time_t t = time(NULL);
+	struct tm* local_time = localtime(&t);
+	char timeStr[100];
+
+	printf("\n%30s%30s\n","", "==============================");
+	printf("%30s%-2s%10s%6s%10s%2s\n","", "||", "", "REPORT","", "||");
+	printf("%30s%30s\n","", "==============================");
+	
+	printf("\n%41s%8s\n","","LowStock");
+	printf("--------------------------------------------------------------------------------------------");
+	title();
+	for (int i = 0; i < size; i++) {
+		if (s[i].stockQuantity < s[i].stockMinimum) {
+			displayStock(s, i);
+		}
+	}
+	printf("--------------------------------------------------------------------------------------------\n");
+
+	printf("\n%42s%5s\n","","Stock");
+	printf("--------------------------------------------------------------------------------------------");
+	title();
+	for (int i = 0; i < size; i++) {
+		if (s[i].stockQuantity >= s[i].stockMinimum) {
+			displayStock(s, i);
+		}
+	}
+	printf("--------------------------------------------------------------------------------------------\n");
+	printf("\nTotal Stock Record = %d\n", size);
+
+	strftime(timeStr, sizeof(timeStr), "%Y-%m-%d %H:%M:%S", local_time);
+	printf("\nReport generate at %s\n", timeStr);
 }
