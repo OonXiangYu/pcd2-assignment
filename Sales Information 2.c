@@ -38,6 +38,8 @@ typedef struct {
 }Sales;
 
 // FUNCTIONS ..................................................................................................................................
+void salesMain();
+
 void backMenuAh();
 void wantEditAh();
 void stillWantEditAh();
@@ -76,7 +78,7 @@ void displayDelete();
 void set_today_date(Date* date);
 
 // VOID MAIN...................................................................................................................................
-void main() {
+void salesMain() {
 	int choice;
 	do {
 		printf("\n-------- Welcome To Sales Information -----------\n\n");
@@ -319,7 +321,7 @@ void searchSales() {
 			searchMem();
 			break;
 		case 4:
-			main();
+			salesMain();
 			break;
 		default:
 			printf("\nSorry Choice Unavailable :( \n");
@@ -636,7 +638,7 @@ void modify() {
 					}
 					break;
 				case 4:
-					main();
+					salesMain();
 					break;
 				default:
 					printf("\nSorry Choice Unavailable :(\n");
@@ -696,7 +698,7 @@ void deleteMenu() {
 			deleteSales();
 			break;
 		case 3:
-			main();
+			salesMain();
 			break;
 		default:
 			printf("\nSorry Choice Unavailable :( \n");
@@ -937,7 +939,7 @@ void backMenuAh() {
 		yesno2 = tolower(getchar());
 		switch (yesno2) {
 		case 'y':
-			main();
+			salesMain();
 			break;
 		case 'n':
 			exit(0);
