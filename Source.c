@@ -22,14 +22,14 @@ void editStaff(struct Staff staffList[], int numStaff);
 void checkPassword(struct Staff staffList[], int numStaff);
 void searchStaff(struct Staff staffList[], int numStaff);
 
+
+
 int main() {
     struct Staff staffList[MAX_STAFF];
     int numStaff = 0;
     int choice;
 
     printf("=== YY Company Staff Information System ===\n");
-
-
 
     while (1) {
         printf("\nMenu:\n");
@@ -40,10 +40,15 @@ int main() {
         printf("5. Check Password Account\n");
         printf("6. Search Staff\n");
         printf("7. Exit\n");
-        printf("Enter your choice (1-6): ");
-        scanf("%d", &choice);
-        fflush(stdin);
+        printf("Enter your choice (1-7): ");
 
+        // Input validation
+        while (scanf("%d", &choice) != 1 || choice < 1 || choice > 7) {
+            printf("Invalid choice, please enter a number between 1 and 7: ");
+            fflush(stdin);
+        }
+
+        fflush(stdin);
 
         switch (choice) {
         case 1:
@@ -72,7 +77,12 @@ int main() {
             printf("Invalid choice, please try again.\n");
         }
     }
+
+    return 0;
 }
+
+
+
 
 void addStaff(struct Staff staffList[], int* numStaff) {
     struct Staff newStaff;
@@ -171,6 +181,7 @@ void generateReport(struct Staff staffList[], int numStaff) {
     }
 
     fclose(fp);
+    return;
 }
 
 
@@ -278,203 +289,6 @@ void checkPassword(struct Staff staffList[], int numStaff) {
     fclose(fp);
     printf("No staff member found with the given ID and recovery email.\n");
 }
-
-
-//void updateStaff(struct Staff staffList[], int numStaff) {
-//    char id[7], confirmation[5];
-//    int found = 0;
-//
-//    printf("Enter staff ID: ");
-//    scanf("%s", id);
-//    fflush(stdin);
-//
-//    for (int i = 0; i < numStaff; i++) {
-//        if (strcmp(staffList[i].id, id) == 0) {
-//            found = 1;
-//            printf("Are you sure you want to update staff %s? (yes/no)\n", id);
-//            scanf("%s", confirmation);
-//            fflush(stdin);
-//
-//            if (strcmp(confirmation, "yes") == 0) {
-//                strcpy(staffList[i].name, "XXX");
-//                strcpy(staffList[i].position, "XXX");
-//                strcpy(staffList[i].role, "XXX");
-//                strcpy(staffList[i].recovery, "XXX");
-//                printf("Staff %s has been updated.\n", id);
-//
-//                // Update staff information in the file
-//                FILE* fp = fopen("stafftxt.txt", "w");
-//                FILE* temp_fp = fopen("temp.txt", "w");
-//
-//                if (fp == NULL || temp_fp == NULL) {
-//                    printf("Error: Unable to open file.\n");
-//                    return;
-//                }
-//
-//                for (int j = 0; j < numStaff; j++) {
-//                    fprintf(fp, "%s %s %s %s %s %s\n", staffList[j].id, staffList[j].name, staffList[j].password, staffList[j].position, staffList[j].role, staffList[j].recovery);
-//                    fprintf(temp_fp, "%s %s %s %s %s %s\n", staffList[j].id, staffList[j].name, staffList[j].password, staffList[j].position, staffList[j].role, staffList[j].recovery);
-//                }
-//
-//                fclose(fp);
-//                fclose(temp_fp);
-//            }
-//            else {
-//                printf("Update cancelled.\n");
-//            }
-//
-//            break;
-//        }
-//    }
-//
-//    if (!found) {
-//        printf("Error: Staff not found.\n");
-//    }
-//}
-
-
-
-//void renewPassword(struct Staff staffList[], int* numStaff) {
-//    char id[7], recovery[20], password[20];
-//    int found = 0;
-//
-//    printf("Enter staff ID: ");
-//    scanf("%s", id);
-//    fflush(stdin);
-//
-//    printf("Enter staff recovery email: ");
-//    scanf("%s", recovery);
-//    fflush(stdin);
-//
-//    for (int i = 0; i < *numStaff; i++) {
-//        if (strcmp(staffList[i].id, id) == 0 && strcmp(staffList[i].recovery, recovery) == 0) {
-//            found = 1;
-//            printf("Enter new password: ");
-//            scanf("%s", password);
-//            strcpy(staffList[i].password, password);
-//            printf("Password has been renewed.\n");
-//
-//            // Update staff information in the file
-//            FILE* fp = fopen("stafftxt.txt", "a+");
-//            for (int i = 0; i < *numStaff; i++) {
-//                fprintf(fp, "%s %s %s %s %s %s\n", staffList[i].id, staffList[i].name, staffList[i].password, staffList[i].position, staffList[i].role, staffList[i].recovery);
-//            }
-//            fclose(fp);
-//
-//            break;
-//        }
-//    }
-//
-//    if (!found) {
-//        printf("Error: Staff not found or recovery email incorrect.\n");
-//    }
-//}
-
-
-//void renewPassword(struct Staff staffList[], int numStaff) {
-//    char id[7], newPassword[21];
-//    int index = -1, i = 0;
-//
-//    printf("=== Renew Staff Password ===\n");
-//
-//    printf("Enter Staff ID to renew password: ");
-//    scanf("%s", id);
-//
-//    FILE* fp = fopen("stafftxt.txt", "r");
-//    FILE* temp_fp = fopen("temp.txt", "w");
-//
-//    if (fp == NULL || temp_fp == NULL) {
-//        printf("Error: Unable to open file.\n");
-//        return;
-//    }
-//
-//    while (fscanf(fp, "%s %s %s %s %s\n", staffList[i].id, staffList[i].name, staffList[i].position, staffList[i].role, staffList[i].recovery) != EOF) {
-//        if (strcmp(staffList[i].id, id) == 0) {
-//            index = i;
-//            printf("Enter new Password: ");
-//            scanf("%s", newPassword);
-//            strcpy(staffList[index].password, newPassword);
-//        }
-//        fprintf(temp_fp, "%s %s %s %s %s %s\n", staffList[i].id, staffList[i].name, staffList[i].password, staffList[i].position, staffList[i].role, staffList[i].recovery);
-//        i++;
-//    }
-//
-//    fclose(fp);
-//    fclose(temp_fp);
-//
-//    if (index == -1) {
-//        remove("temp.txt");
-//        printf("Error: Staff ID not found.\n");
-//    }
-//    else {
-//        remove("stafftxt.txt");
-//        rename("temp.txt", "stafftxt.txt");
-//        printf("Staff password updated successfully!\n");
-//    }
-//}
-
-
-//void deleteStaff(struct Staff staffList[], int* numStaff) {
-//    char id[7];
-//    int index = -1;
-//    char line[1024];
-//
-//
-//    printf("=== Delete Staff Account ===\n");
-//
-//    printf("Enter Staff ID to delete: ");
-//    scanf("%s", id);
-//
-//    FILE* fp = fopen("stafftxt.txt", "r");
-//    FILE* temp_fp = fopen("themp.txt", "w");
-//    if (fp == NULL || temp_fp == NULL) {
-//        printf("Error: Unable to open file.\n");
-//        return;
-//    }
-//
-//    // Find the index of the staff with the given ID
-//    for (int i = 0; i < *numStaff; i++) {
-//        if (strcmp(staffList[i].id, id) == 0) {
-//            index = i;
-//            break;
-//        }
-//    }
-//
-//    if (index == -1) {
-//        printf("Error: Staff ID not found.\n");
-//        return;
-//    }
-//
-//    // Shift all staff after the index back one position
-//    for (int i = index; i < *numStaff - 1; i++) {
-//        staffList[i] = staffList[i + 1];
-//    }
-//
-//    (*numStaff)--;
-//    printf("Staff account deleted successfully!\n");
-//
-//    // Update the contents of the text file with the new staffList array
-//    fp = fopen("stafftxt.txt", "w");
-//    if (fp == NULL) {
-//        printf("Error: Unable to open file.\n");
-//        return;
-//    }
-//    for (int i = 0; i < *numStaff; i++) {
-//        fprintf(fp, "%s,%s,%s,%s,%s\n", staffList[i].id, staffList[i].name, staffList[i].password, staffList[i].recovery, staffList[i].position, staffList[i].role);
-//    }
-//    fclose(fp);
-//
-//    // Rewrite the temporary file to the original file
-//    fp = fopen("stafftxt.txt", "w");
-//    temp_fp = fopen("themp.txt", "r");
-//    while (fgets(line, 1024, temp_fp)) {
-//        fprintf(fp, "%s", line);
-//    }
-//    fclose(fp);
-//    fclose(temp_fp);
-//
-//    remove("themp.txt");
-//}
 
 void searchStaff(struct Staff staffList[], int numStaff) {
     
