@@ -147,6 +147,7 @@ void main() {
 		getSize(s, &size);
 
 		//logo
+		printf("\n\n");
 		printf("  %5s  %5s  %5s  %5s  %s%3s%s\n", "=====", "=====", "=====", "=====", "=", "", "=");
 		printf("  %s%4s  %2s%s%2s  %s%3s%s  %s%4s  %s%2s%s\n", "=", "", "", "=", "", "=", "", "=", "=", "", "=", "", "=");
 		printf("  %5s  %2s%s%2s  %s%3s%s  %s%4s  %s%s%s\n", "=====", "", "=", "", "=", "", "=", "=", "", "=", "", "=");
@@ -518,7 +519,7 @@ void searchStock(Stock s[], int size) {
 void modifyStock() {
 
 					char  nname[20],code[6], yesno;
-					int day, month, year, min, reorder, option, size, con = 0, a = 0, b = 0;
+					int day, month, year, min, reorder, option, size, con = 0, a = 0;
 					double price;
 					Stock s[1000];
 					getSize(s, &size);
@@ -540,7 +541,7 @@ void modifyStock() {
 						else if (validFormat(code) == 1) { //valid format
 							for (int i = 0; i < size; i++) { 
 								if (strcmp(code, s[i].stockCode) == 0) { //compare code
-									if (strcmp(s[i].status, "avaliable") == 0) { //compare status
+									if (strcmp(s[i].status, "available") == 0) { //compare status
 										do {
 											title();
 											displayStock(s, i);
@@ -599,8 +600,7 @@ void modifyStock() {
 													do {
 														printf("Please enter new minimum quantity :");
 														rewind(stdin);
-														scanf("%d", &min);
-														if (validNumber(min) == 1) { //validation
+														if (scanf("%d", &min) != 1) { //validation
 															printf("\nAlphabet is not allow\n");
 														}
 														else if (validNumber(min) == 2) {
@@ -636,8 +636,7 @@ void modifyStock() {
 													do {
 														printf("Please enter new reorder quantity :");
 														rewind(stdin);
-														scanf("%d", &reorder);
-														if (validNumber(reorder) == 1) { //validation
+														if (scanf("%d", &reorder) != 1) { //validation
 															printf("\nAlphabet is not allow\n");
 														}
 														else if (validNumber(reorder) == 2) {
@@ -761,7 +760,7 @@ void modifyStock() {
 										} while (option != 6); //loop
 									}
 									else{
-									printf("\nOnly stock that is avaliable allow to modify\n");
+									printf("\nOnly stock that is available allow to modify\n");
 									a++; //add when status is unavaliable or -
 									}
 								}
@@ -799,9 +798,9 @@ void updateStock() {
 		if (strcmp(code, "stop") == 0) { //exit when type stop
 			return;
 		}
-		else if (validFormat(code) == 1) {
+		else if (validFormat(code) == 1) { //valid format
 			for (int i = 0; i < size; i++) {
-				if (strcmp(code, s[i].stockCode) == 0) {
+				if (strcmp(code, s[i].stockCode) == 0) { //compare whether the code is same
 					do {
 						title();
 						displayStock(s, i);
@@ -815,17 +814,17 @@ void updateStock() {
 							switch (option) {
 							case 1:
 								do {
-									printf("\n1. avaliable\n");
-									printf("2. unavaliable\n");
+									printf("\n1. available\n");
+									printf("2. unavailable\n");
 									printf("Please update the new status >");
 									rewind(stdin);
 									scanf("%d", &select);
 									if (select == 1) {
-										strcpy(status, "avaliable");
+										strcpy(status, "available"); //change status
 										printf("\nStatus change\n");
 									}
 									else if (select == 2) {
-										strcpy(status, "unavaliable");
+										strcpy(status, "unavailable"); //change status
 										printf("\nStatus change\n");
 									}
 									else {
@@ -841,7 +840,7 @@ void updateStock() {
 									if (yesno == 'y') {
 										strcpy(s[i].status, status);
 										printf("\nRecord change\n");
-										FILE* wptr = fopen(FILE_NAME, "wb");
+										FILE* wptr = fopen(FILE_NAME, "wb"); //update status to file
 										fwrite(&s, sizeof(Stock), size, wptr);
 										fclose(wptr);
 									}
@@ -867,14 +866,14 @@ void updateStock() {
 											title();
 											displayStock(s, i);
 											quantity = s[i].stockQuantity;
-											quantity += s[i].stockReorder;
+											quantity += s[i].stockReorder; //quantity + reorder
 											printf("Are you confirm to reorder (y/n) >");
 											rewind(stdin);
 											yesno = tolower(getchar());
 											if (yesno == 'y') {
 												s[i].stockQuantity = quantity;
 												printf("Reorder success\n");
-												FILE* wptr = fopen(FILE_NAME, "wb");
+												FILE* wptr = fopen(FILE_NAME, "wb"); //edit reocrd in file
 												fwrite(&s, sizeof(Stock), size, wptr);
 												fclose(wptr);
 											}
@@ -889,7 +888,7 @@ void updateStock() {
 												quantity = s[i].stockQuantity;
 												printf("\nPlease enter the quantity that we have sold >");
 												rewind(stdin);
-												if (scanf("%d", &decrease) != 1) {
+												if (scanf("%d", &decrease) != 1) { //validation
 													printf("\nAlphabet and Symbol are not allow\n");
 												}
 												else if (validNumber(decrease) == 2) {
@@ -898,7 +897,7 @@ void updateStock() {
 												else if (validNumber(decrease) == 3) {
 													printf("\nValid answer\n");
 												}
-											} while (validNumber(decrease) != 3);
+											} while (validNumber(decrease) != 3); //loop
 
 											do {
 												printf("\nAre you confirm to update (y/n) >");
@@ -912,7 +911,7 @@ void updateStock() {
 													else {
 														s[i].stockQuantity = quantity;
 														printf("\nStock Updated\n");
-														FILE* wptr = fopen(FILE_NAME, "wb");
+														FILE* wptr = fopen(FILE_NAME, "wb"); //edit record in file
 														fwrite(&s, sizeof(Stock), size, wptr);
 														fclose(wptr);
 													}
@@ -920,7 +919,7 @@ void updateStock() {
 												else if (yesno == 'n') {
 													printf("Quantity no changes\n");
 												}
-											} while (yesno != 'y' && yesno != 'n');
+											} while (yesno != 'y' && yesno != 'n'); //loop
 											break;
 										case 3:
 											return;
@@ -930,7 +929,7 @@ void updateStock() {
 									else {
 										printf("\nInvalid answer\n");
 									}
-								} while (chose != 3);
+								} while (chose != 3); //loop
 							case 3:
 								return;
 								break;
@@ -939,10 +938,10 @@ void updateStock() {
 						else {
 							printf("\nInvalid answer\n");
 						}
-					} while (option != 3);
+					} while (option != 3); //loop
 				}
 				else {
-				con++;
+				con++; //add when code isnt exist
 				}
 			}
 			if (con != 0) {
@@ -951,9 +950,9 @@ void updateStock() {
 		}
 		else {
 			printf("\nInvalid format\n");
-			b++;
+			b++; //add when code format is wrong
 		}
-	}while (con != 0 || b != 0);
+	}while (con != 0 || b != 0); //loop
 }
 
 void reportStock(Stock s[], int size) {
@@ -961,6 +960,7 @@ void reportStock(Stock s[], int size) {
 	struct tm* local_time = localtime(&t);
 	char timeStr[100];
 
+	//logo
 	printf("\n%38s%30s\n","", "==============================");
 	printf("%38s%-2s%10s%6s%10s%2s\n","", "||", "", "REPORT","", "||");
 	printf("%38s%30s\n","", "==============================");
@@ -969,7 +969,7 @@ void reportStock(Stock s[], int size) {
 	printf("-------------------------------------------------------------------------------------------------------------");
 	title();
 	for (int i = 0; i < size; i++) {
-		if (s[i].stockQuantity < s[i].stockMinimum) {
+		if (s[i].stockQuantity < s[i].stockMinimum) { //display stock that is low
 			displayStock(s, i);
 		}
 	}
@@ -979,27 +979,27 @@ void reportStock(Stock s[], int size) {
 	printf("-------------------------------------------------------------------------------------------------------------");
 	title();
 	for (int i = 0; i < size; i++) {
-		if (s[i].stockQuantity >= s[i].stockMinimum) {
+		if (s[i].stockQuantity >= s[i].stockMinimum) { //display stock that is enough
 			displayStock(s, i);
 		}
 	}
 	printf("-------------------------------------------------------------------------------------------------------------\n");
 
-	printf("\n%47s%11s\n","","Unavaliable");
+	printf("\n%47s%11s\n","","Unavailable");
 	printf("-------------------------------------------------------------------------------------------------------------");
 	title();
 	for (int i = 0; i < size; i++) {
-		if (strcmp(s[i].status, "unavaliable") == 0) {
+		if (strcmp(s[i].status, "unavailable") == 0) { //display stock that is unavaliable
 			displayStock(s, i);
 		}
 	}
 	printf("-------------------------------------------------------------------------------------------------------------\n");
 
-	printf("\n%48s%9s\n","","Avaliable");
+	printf("\n%48s%9s\n","","Available");
 	printf("-------------------------------------------------------------------------------------------------------------");
 	title();
-	for (int i = 0; i < size; i++) {
-		if (strcmp(s[i].status, "avaliable") == 0) {
+	for (int i = 0; i < size; i++) { //display stock that is avaliable
+		if (strcmp(s[i].status, "available") == 0) {
 			displayStock(s, i);
 		}
 	}
@@ -1008,15 +1008,17 @@ void reportStock(Stock s[], int size) {
 	printf("\n%42s%18s\n","","Status havent update");
 	printf("-------------------------------------------------------------------------------------------------------------");
 	title();
-	for (int i = 0; i < size; i++) {
+	for (int i = 0; i < size; i++) { //display stock that forget to update status
 		if (strcmp(s[i].status, "-") == 0) {
 			displayStock(s, i);
 		}
 	}
 	printf("-------------------------------------------------------------------------------------------------------------\n");
 
-	printf("\nTotal Stock Record = %d\n", size);
+	printf("\nTotal Stock Record = %d\n", size); //total record
 
 	strftime(timeStr, sizeof(timeStr), "%Y-%m-%d %H:%M:%S", local_time);
-	printf("\nReport generate at %s\n", timeStr);
+	printf("\nReport generate at %s\n", timeStr); //current local time
+	printf("\n\n");
+	system("pause");
 }
