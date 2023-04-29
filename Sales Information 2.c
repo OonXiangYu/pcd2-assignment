@@ -120,7 +120,7 @@ void salesMain() {
 			reportSales();
 
 		case 7:
-			exit(0);
+			return;
 		default:
 			printf("\bSorry Choice Unavailable :(\n");
 		}
