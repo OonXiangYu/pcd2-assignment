@@ -19,15 +19,12 @@ struct membershipDate {
 };
 
 typedef struct {
-	char name[30], id[8], gender, password[30], membership;
-	struct membershipDate mDate;
+	char id[8];
 }Member;
 
 typedef struct {
-	char stockCode[6], stockName[20];
-	int stockQuantity, stockMinimum, stockReorder;
+	char stockCode[6];
 	double stockPrice;
-	Date d;
 }Stock;
 
 typedef struct {
@@ -46,9 +43,9 @@ void stillWantEditAh();
 
 void addSales();
 int salesValid(char salesId[5]);
-int itemValid(char itemCode[6]);
-double setPrice(char itemCode[6]);
-int memberValid(char memId[8]);
+int itemValid(char itemCode[15]);
+double setPrice(char itemCode[15]);
+int memberValid(char memId[20]);
 
 void displaySales();
 
@@ -58,10 +55,10 @@ void searchSalesId();
 int searchIdValid(char salesId[5]);
 
 void searchItem();
-int searchItemValid(char itemCode[6]);
+int searchItemValid(char itemCode[15]);
 
 void searchMem();
-int searchMemValid(char memId[8]);
+int searchMemValid(char memId[20]);
 
 void modify();
 int salesModifyValid(char salesId[5]);
@@ -78,6 +75,9 @@ void displayDelete();
 void set_today_date(Date* date);
 
 // VOID MAIN...................................................................................................................................
+void main() {
+	salesMain();
+}
 void salesMain() {
 	int choice;
 	do {
@@ -151,7 +151,7 @@ void addSales(){
 		} while (salesValid(p.id) == 1 || salesValid(p.id) == 2);
 
 		do {
-			printf("Please enter the Item Code (V1001) > ");
+			printf("Please enter the Item Code (a0001) > ");
 			rewind(stdin);
 			gets(p.code);
 			if (itemValid(p.code) != 1) {
@@ -160,7 +160,7 @@ void addSales(){
 		} while (itemValid(p.code) != 1);
 
 		do {
-			printf("Please enter Member ID (MEM0001)   > ");
+			printf("Please enter Member ID (MEM00001)   > ");
 			rewind(stdin);
 			gets(p.memberId);
 			if (memberValid(p.memberId) != 1) {
@@ -220,7 +220,7 @@ int salesValid(char salesId[5]) {
 }
 	
 
-int itemValid(char itemCode[6]) {
+int itemValid(char itemCode[15]) {
 	Stock s;
 	FILE* fptr = fopen("stock.dat", "rb");
 	if (fptr == NULL) {
@@ -239,7 +239,7 @@ int itemValid(char itemCode[6]) {
 }
 
 
-double setPrice(char itemCode[6]) {
+double setPrice(char itemCode[15]) {
 	Stock s;
 	FILE* fPtr = fopen("stock.dat", "rb");
 	if (fPtr == NULL) {
@@ -256,7 +256,7 @@ double setPrice(char itemCode[6]) {
 }
 
 
-int memberValid(char memId[8]) {
+int memberValid(char memId[20]) {
 	Member m;
 	FILE* fptr = fopen("MemberList.dat", "rb");
 	if (fptr == NULL) {
@@ -287,7 +287,7 @@ void displaySales() {
 	printf("-------------------------------------------------------------------------------------------------------\n");
 	while (!feof(fptr)) {
 		fscanf(fptr, "%[^|]|%[^|]|%d|%lf|%[^|]|%d/%d/%d\n", &p.id, &p.code, &p.quantity, &p.price, &p.memberId, &p.date.day, &p.date.month, &p.date.year);
-		printf("%-15s %5s %18d %21.2lf %19s %13d/%d/%d\n", p.id, p.code, p.quantity, p.price, p.memberId, p.date.day, p.date.month, p.date.year);
+		printf("%-15s %5s %18d %21.2lf %20s %12d/%d/%d\n", p.id, p.code, p.quantity, p.price, p.memberId, p.date.day, p.date.month, p.date.year);
 	}
 	fclose(fptr);
 
@@ -354,7 +354,7 @@ void searchSalesId() {
 			while (!feof(fptr)) {
 				fscanf(fptr, "%[^|]|%[^|]|%d|%lf|%[^|]|%d/%d/%d\n", &p.id, &p.code, &p.quantity, &p.price, &p.memberId, &p.date.day, &p.date.month, &p.date.year);
 				if (strcmp(p.id, salesId) == 0) {
-					printf("%-15s %5s %18d %21.2lf %19s %13d/%d/%d\n", p.id, p.code, p.quantity, p.price, p.memberId, p.date.day, p.date.month, p.date.year);
+					printf("%-15s %5s %18d %21.2lf %20s %12d/%d/%d\n", p.id, p.code, p.quantity, p.price, p.memberId, p.date.day, p.date.month, p.date.year);
 					idFound = 1;
 				}
 			}
@@ -395,7 +395,7 @@ int searchIdValid(char salesId[5]) {
 // SEARCH ITEM ID AND VALIDATION.................
 void searchItem() {
 	Sales p;
-	char itemCode[6];
+	char itemCode[15];
 
 	FILE* fptr = fopen(SALESFILE, "r");
 	if (fptr == NULL) {
@@ -405,7 +405,7 @@ void searchItem() {
 
 	int idFound = 0;
 	do {
-		printf("\nPlease enter Item Code to search (V1001)  > ");
+		printf("\nPlease enter Item Code to search (a0001)  > ");
 		rewind(stdin);
 		gets(itemCode);
 
@@ -416,7 +416,7 @@ void searchItem() {
 			while (!feof(fptr)) {
 				fscanf(fptr, "%[^|]|%[^|]|%d|%lf|%[^|]|%d/%d/%d\n", &p.id, &p.code, &p.quantity, &p.price, &p.memberId, &p.date.day, &p.date.month, &p.date.year);
 				if (strcmp(p.code, itemCode) == 0) {
-					printf("%-15s %5s %18d %21.2lf %19s %13d/%d/%d\n", p.id, p.code, p.quantity, p.price, p.memberId, p.date.day, p.date.month, p.date.year);
+					printf("%-15s %5s %18d %21.2lf %20s %12d/%d/%d\n", p.id, p.code, p.quantity, p.price, p.memberId, p.date.day, p.date.month, p.date.year);
 					idFound = 1;
 				}
 			}
@@ -434,7 +434,7 @@ void searchItem() {
 }
 
 
-int searchItemValid(char itemCode[6]) {
+int searchItemValid(char itemCode[15]) {
 	Sales p;
 	FILE* fptr = fopen(SALESFILE, "r");
 	if (fptr == NULL) {
@@ -456,7 +456,7 @@ int searchItemValid(char itemCode[6]) {
 // SEARCH MEMBER ID AND VALIDATION................
 void searchMem() {
 	Sales p;
-	char memId[8];
+	char memId[20];
 
 	FILE* fptr = fopen(SALESFILE, "r");
 	if (fptr == NULL) {
@@ -466,7 +466,7 @@ void searchMem() {
 
 	int idFound = 0;
 	do {
-		printf("\nPlease enter Member ID to search (MEM0001)  > ");
+		printf("\nPlease enter Member ID to search (MEM00001)  > ");
 		rewind(stdin);
 		gets(memId);
 
@@ -477,7 +477,7 @@ void searchMem() {
 			while (!feof(fptr)) {
 				fscanf(fptr, "%[^|]|%[^|]|%d|%lf|%[^|]|%d/%d/%d\n", &p.id, &p.code, &p.quantity, &p.price, &p.memberId, &p.date.day, &p.date.month, &p.date.year);
 				if (strcmp(p.memberId, memId) == 0) {
-					printf("%-15s %5s %18d %21.2lf %19s %13d/%d/%d\n", p.id, p.code, p.quantity, p.price, p.memberId, p.date.day, p.date.month, p.date.year);
+					printf("%-15s %5s %18d %21.2lf %20s %12d/%d/%d\n", p.id, p.code, p.quantity, p.price, p.memberId, p.date.day, p.date.month, p.date.year);
 					idFound = 1;
 				}
 			}
@@ -494,7 +494,7 @@ void searchMem() {
 	wantEditAh();
 }
 
-int searchMemValid(char memId[8]) {
+int searchMemValid(char memId[20]) {
 	Sales p;
 	FILE* fptr = fopen(SALESFILE, "r");
 	if (fptr == NULL) {
@@ -542,7 +542,6 @@ void modify() {
 	} while (salesModifyValid(salesId) != 1);
 
 	int amount, choice;
-	double prices;
 	char item[6];
 	char member[8];
 	char confirm;
@@ -551,7 +550,7 @@ void modify() {
 		if (strcmp(salesId, p[i].id) == 0) {
 			printf("%50s", "\n\n...........DATA RETRIEVED...........");
 			printf("\n%-15s %5s %20s %19s %17s %13s\n", "Sales Id", "Item Code", "Quantity", "Price(RM)", "Member ID", "Date");
-			printf("%-15s %5s %18d %21.2lf %19s %13d/%d/%d\n", p[i].id, p[i].code, p[i].quantity, p[i].price, p[i].memberId, p[i].date.day, p[i].date.month, p[i].date.year);
+			printf("%-15s %5s %18d %21.2lf %20s %12d/%d/%d\n", p[i].id, p[i].code, p[i].quantity, p[i].price, p[i].memberId, p[i].date.day, p[i].date.month, p[i].date.year);
 
 			do {
 				printf("\n......Please choose the field you want to edit.......\n");
@@ -567,7 +566,7 @@ void modify() {
 				case 1:
 					while (1) {
 						do {
-							printf("\nPlease enter the new Item Code (V1001) >>> ");
+							printf("\nPlease enter the new Item Code (a0001) >>> ");
 							rewind(stdin);
 							gets(item);
 							if (itemValid(item)!= 1) {
@@ -615,7 +614,7 @@ void modify() {
 				case 3:
 					while (3) {
 						do {
-							printf("\nPlease enter the new Member ID (MEM0001) >>> ");
+							printf("\nPlease enter the new Member ID (MEM00001) >>> ");
 							rewind(stdin);
 							gets(member);
 							if (memberValid(member) != 1) {
@@ -738,7 +737,7 @@ void deleteSales() {
 		if (strcmp(salesId, p[i].id) == 0) {
 			printf("%50s", "\n\n...........DATA RETRIEVED...........");
 			printf("\n%-15s %5s %20s %19s %17s %13s\n", "Sales Id", "Item Code", "Quantity", "Price(RM)", "Member ID", "Date");
-			printf("%-15s %5s %18d %21.2lf %19s %13d/%d/%d\n", p[i].id, p[i].code, p[i].quantity, p[i].price, p[i].memberId, p[i].date.day, p[i].date.month, p[i].date.year);
+			printf("%-15s %5s %18d %21.2lf %20s %12d/%d/%d\n", p[i].id, p[i].code, p[i].quantity, p[i].price, p[i].memberId, p[i].date.day, p[i].date.month, p[i].date.year);
 		}
 	}
 	FILE* fPtr;
@@ -818,7 +817,7 @@ void displayDelete() {
 	printf("-------------------------------------------------------------------------------------------------------\n");
 	while (!feof(fptr)) {
 		fscanf(fptr, "%[^|]|%[^|]|%d|%lf|%[^|]|%d/%d/%d\n", &p.id, &p.code, &p.quantity, &p.price, &p.memberId, &p.date.day, &p.date.month, &p.date.year);
-		printf("%-15s %5s %18d %21.2lf %19s %13d/%d/%d\n", p.id, p.code, p.quantity, p.price, p.memberId, p.date.day, p.date.month, p.date.year);
+		printf("%-15s %5s %18d %21.2lf %20s %12d/%d/%d\n", p.id, p.code, p.quantity, p.price, p.memberId, p.date.day, p.date.month, p.date.year);
 	}
 	fclose(fptr);
 
@@ -854,7 +853,7 @@ void reportSales() {
 	printf("-----------------------------------------------------------------------------------------------------------------------\n");
 	while (!feof(fptr)) {
 		fscanf(fptr, "%[^|]|%[^|]|%d|%lf|%[^|]|%d/%d/%d\n", &p.id, &p.code, &p.quantity, &p.price, &p.memberId, &p.date.day, &p.date.month, &p.date.year);
-		printf("%-15s %5s %18d %21.2lf %19s %13d/%d/%d", p.id, p.code, p.quantity, p.price, p.memberId, p.date.day, p.date.month, p.date.year);
+		printf("%-15s %5s %18d %21.2lf %20s %12d/%d/%d", p.id, p.code, p.quantity, p.price, p.memberId, p.date.day, p.date.month, p.date.year);
 		revenue(p.quantity, p.price);
 	}
 	printf("-----------------------------------------------------------------------------------------------------------------------\n");
@@ -942,7 +941,7 @@ void backMenuAh() {
 			salesMain();
 			break;
 		case 'n':
-			exit(0);
+			return;
 			break;
 		default:
 			printf("Please enter (y/n) ONLY!!\n");
