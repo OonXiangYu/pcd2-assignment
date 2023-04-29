@@ -19,12 +19,15 @@ struct membershipDate {
 };
 
 typedef struct {
-	char id[8];
+	char name[31], id[9], gender, password[31], membershipType;
+	struct membershipDate mExpiryDate;
 }Member;
 
-typedef struct {
-	char stockCode[6];
+typedef struct { 
+	char stockCode[6], stockName[21], status[15];
+	int stockQuantity, stockMinimum, stockReorder;
 	double stockPrice;
+	Date date;
 }Stock;
 
 typedef struct {
