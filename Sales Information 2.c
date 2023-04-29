@@ -290,7 +290,7 @@ void displaySales() {
 	printf("-------------------------------------------------------------------------------------------------------\n");
 	while (!feof(fptr)) {
 		fscanf(fptr, "%[^|]|%[^|]|%d|%lf|%[^|]|%d/%d/%d\n", &p.id, &p.code, &p.quantity, &p.price, &p.memberId, &p.date.day, &p.date.month, &p.date.year);
-		printf("%-15s %5s %18d %21.2lf %20s %12d/%d/%d\n", p.id, p.code, p.quantity, p.price, p.memberId, p.date.day, p.date.month, p.date.year);
+		printf("%-15s %5s %18d %24.2lf %17s %12d/%d/%d\n", p.id, p.code, p.quantity, p.price, p.memberId, p.date.day, p.date.month, p.date.year);
 	}
 	fclose(fptr);
 
@@ -357,7 +357,7 @@ void searchSalesId() {
 			while (!feof(fptr)) {
 				fscanf(fptr, "%[^|]|%[^|]|%d|%lf|%[^|]|%d/%d/%d\n", &p.id, &p.code, &p.quantity, &p.price, &p.memberId, &p.date.day, &p.date.month, &p.date.year);
 				if (strcmp(p.id, salesId) == 0) {
-					printf("%-15s %5s %18d %21.2lf %20s %12d/%d/%d\n", p.id, p.code, p.quantity, p.price, p.memberId, p.date.day, p.date.month, p.date.year);
+					printf("%-15s %5s %18d %24.2lf %17s %12d/%d/%d\n", p.id, p.code, p.quantity, p.price, p.memberId, p.date.day, p.date.month, p.date.year);
 					idFound = 1;
 				}
 			}
@@ -419,7 +419,7 @@ void searchItem() {
 			while (!feof(fptr)) {
 				fscanf(fptr, "%[^|]|%[^|]|%d|%lf|%[^|]|%d/%d/%d\n", &p.id, &p.code, &p.quantity, &p.price, &p.memberId, &p.date.day, &p.date.month, &p.date.year);
 				if (strcmp(p.code, itemCode) == 0) {
-					printf("%-15s %5s %18d %21.2lf %20s %12d/%d/%d\n", p.id, p.code, p.quantity, p.price, p.memberId, p.date.day, p.date.month, p.date.year);
+					printf("%-15s %5s %18d %24.2lf %17s %12d/%d/%d\n", p.id, p.code, p.quantity, p.price, p.memberId, p.date.day, p.date.month, p.date.year);
 					idFound = 1;
 				}
 			}
@@ -480,7 +480,7 @@ void searchMem() {
 			while (!feof(fptr)) {
 				fscanf(fptr, "%[^|]|%[^|]|%d|%lf|%[^|]|%d/%d/%d\n", &p.id, &p.code, &p.quantity, &p.price, &p.memberId, &p.date.day, &p.date.month, &p.date.year);
 				if (strcmp(p.memberId, memId) == 0) {
-					printf("%-15s %5s %18d %21.2lf %20s %12d/%d/%d\n", p.id, p.code, p.quantity, p.price, p.memberId, p.date.day, p.date.month, p.date.year);
+					printf("%-15s %5s %18d %24.2lf %17s %12d/%d/%d\n", p.id, p.code, p.quantity, p.price, p.memberId, p.date.day, p.date.month, p.date.year);
 					idFound = 1;
 				}
 			}
@@ -553,7 +553,7 @@ void modify() {
 		if (strcmp(salesId, p[i].id) == 0) {
 			printf("%50s", "\n\n...........DATA RETRIEVED...........");
 			printf("\n%-15s %5s %20s %19s %17s %13s\n", "Sales Id", "Item Code", "Quantity", "Price(RM)", "Member ID", "Date");
-			printf("%-15s %5s %18d %21.2lf %20s %12d/%d/%d\n", p[i].id, p[i].code, p[i].quantity, p[i].price, p[i].memberId, p[i].date.day, p[i].date.month, p[i].date.year);
+			printf("%-15s %5s %18d %24.2lf %17s %12d/%d/%d\n", p[i].id, p[i].code, p[i].quantity, p[i].price, p[i].memberId, p[i].date.day, p[i].date.month, p[i].date.year);
 
 			do {
 				printf("\n......Please choose the field you want to edit.......\n");
@@ -740,7 +740,7 @@ void deleteSales() {
 		if (strcmp(salesId, p[i].id) == 0) {
 			printf("%50s", "\n\n...........DATA RETRIEVED...........");
 			printf("\n%-15s %5s %20s %19s %17s %13s\n", "Sales Id", "Item Code", "Quantity", "Price(RM)", "Member ID", "Date");
-			printf("%-15s %5s %18d %21.2lf %20s %12d/%d/%d\n", p[i].id, p[i].code, p[i].quantity, p[i].price, p[i].memberId, p[i].date.day, p[i].date.month, p[i].date.year);
+			printf("%-15s %5s %18d %24.2lf %17s %12d/%d/%d\n", p[i].id, p[i].code, p[i].quantity, p[i].price, p[i].memberId, p[i].date.day, p[i].date.month, p[i].date.year);
 		}
 	}
 	FILE* fPtr;
@@ -820,7 +820,7 @@ void displayDelete() {
 	printf("-------------------------------------------------------------------------------------------------------\n");
 	while (!feof(fptr)) {
 		fscanf(fptr, "%[^|]|%[^|]|%d|%lf|%[^|]|%d/%d/%d\n", &p.id, &p.code, &p.quantity, &p.price, &p.memberId, &p.date.day, &p.date.month, &p.date.year);
-		printf("%-15s %5s %18d %21.2lf %20s %12d/%d/%d\n", p.id, p.code, p.quantity, p.price, p.memberId, p.date.day, p.date.month, p.date.year);
+		printf("%-15s %5s %18d %24.2lf %17s %12d/%d/%d\n", p.id, p.code, p.quantity, p.price, p.memberId, p.date.day, p.date.month, p.date.year);
 	}
 	fclose(fptr);
 
@@ -856,7 +856,7 @@ void reportSales() {
 	printf("-----------------------------------------------------------------------------------------------------------------------\n");
 	while (!feof(fptr)) {
 		fscanf(fptr, "%[^|]|%[^|]|%d|%lf|%[^|]|%d/%d/%d\n", &p.id, &p.code, &p.quantity, &p.price, &p.memberId, &p.date.day, &p.date.month, &p.date.year);
-		printf("%-15s %5s %18d %21.2lf %20s %12d/%d/%d", p.id, p.code, p.quantity, p.price, p.memberId, p.date.day, p.date.month, p.date.year);
+		printf("%-15s %5s %18d %24.2lf %17s %12d/%d/%d", p.id, p.code, p.quantity, p.price, p.memberId, p.date.day, p.date.month, p.date.year);
 		revenue(p.quantity, p.price);
 	}
 	printf("-----------------------------------------------------------------------------------------------------------------------\n");
