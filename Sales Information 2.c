@@ -935,7 +935,7 @@ void set_today_date(Date* date) {
 void backMenuAh() {
 	char yesno2;
 	do {
-		printf("\nDo you want to back to Main Menu ?\n");
+		printf("\nDo you want to back to Sales Menu ?\n");
 		printf("y = yes, n = no >  ");
 		rewind(stdin);
 		yesno2 = tolower(getchar());
