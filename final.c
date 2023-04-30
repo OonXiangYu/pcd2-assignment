@@ -10,6 +10,7 @@
 #define SALESFILE "Sales.txt"
 #define MAX 1000
 #define MAX_STAFF 100
+#define MIN_PASSWORD_LENGTH 8
 
 // STRUCTURE .................................................................................................................................
 //Goo Yong Kang 
@@ -138,21 +139,113 @@ void salesMain();
 int staffMain();
 void stockMain();
 
+//logo function
+void red();
+void green();
+void yellow();
+void blue();
+void purple();
+void cyan();
+void mainLogo();
+void logo();
+void colourReset();
+
+void colourReset() {
+	printf("\033[0m");
+}
+
+void logo() {
+	int i, g, t;
+	char a[6] = { 'a', 'b','c','d','e','f' };
+	for (i = 0; i < 41; i++) {
+		g = i % 6;
+		if (a[g] == 'a') {
+			system("cls");
+			red();
+			mainLogo();
+			Sleep(100);
+			system("cls");
+		}
+		else if (a[g] == 'b') {
+			yellow();
+			mainLogo();
+			Sleep(100);
+			system("cls");
+		}
+		else if (a[g] == 'c') {
+			green();
+			mainLogo();
+			Sleep(100);
+			system("cls");
+		}
+		else if (a[g] == 'd') {
+			cyan();
+			mainLogo();
+			Sleep(100);
+			system("cls");
+		}
+		else if (a[g] == 'e') {
+			blue();
+			mainLogo();
+			Sleep(100);
+			system("cls");
+		}
+		else if (a[g] == 'f') {
+			purple();
+			mainLogo();
+			Sleep(100);
+			system("cls");
+		}
+	}
+}
+
+void mainLogo() {
+	printf("\t\t\t .----------------.   .----------------. \n");
+	printf("\t\t\t| .--------------. | | .--------------. |\n");
+	printf("\t\t\t| |  ____  ____  | | | |  ____  ____  | |\n");
+	printf("\t\t\t| | |_  _||_  _| | | | | |_  _||_  _| | |\n");
+	printf("\t\t\t| |   \\ \\  / /   | | | |   \\ \\  / /   | |\n");
+	printf("\t\t\t| |    \\ \\/ /    | | | |    \\ \\/ /    | |\n");
+	printf("\t\t\t| |    _|  |_    | | | |    _|  |_    | |\n");
+	printf("\t\t\t| |   |______|   | | | |   |______|   | |\n");
+	printf("\t\t\t| |              | | | |              | |\n");
+	printf("\t\t\t| '--------------' | | '--------------' |\n");
+	printf("\t\t\t '----------------'   '----------------' \n");
+}
+
+void red() {
+	printf("\033[1;31m");
+}
+
+void green() {
+	printf("\033[1;32m");
+}
+
+void yellow() {
+	printf("\033[1;33m");
+}
+
+void blue() {
+	printf("\033[1;34m");
+}
+
+void purple() {
+	printf("\033[1;35m");
+}
+
+void cyan() {
+	printf("\033[1;36m");
+}
+
+
 void main() {
 	int option;
 
 	do {
 		printf("\n\n");
-		printf("-----------------------\n");
-		printf(" YY     YY   YY     YY\n");
-		printf("  YY   YY     YY   YY\n");
-		printf("   YY YY       YY YY\n");
-		printf("    YYY         YYY\n");
-		printf("     Y           Y\n");
-		printf("     Y           Y\n");
-		printf("     Y           Y\n");
-		printf("-----------------------\n");
-
+		logo();
+		colourReset();
+		mainLogo();
 		printf("1. Member Module\n");
 		printf("2. Sales Module\n");
 		printf("3. Staff Module\n");
@@ -1942,7 +2035,7 @@ int staffMain() {
 
 		// Input validation
 		while (scanf("%d", &choice) != 1 || choice < 1 || choice > 7) {
-			printf("Invalid choice, please enter a number between 1 and 7: ");
+			printf("Invalid choice, please enter a number between 1 and 8: ");
 			fflush(stdin);
 		}
 
@@ -1971,6 +2064,8 @@ int staffMain() {
 			printf("Exiting program.\n");
 			return;
 			break;
+
+
 		default:
 			printf("Invalid choice, please try again.\n");
 		}
@@ -1984,6 +2079,8 @@ int staffMain() {
 
 void addStaff(struct Staff staffList[], int* numStaff) {
 	struct Staff newStaff;
+	char expected_suffix[] = "@gmail.com";
+
 
 	FILE* fp = fopen("stafftxt.txt", "a");
 	printf("Enter id : ");
@@ -2006,14 +2103,21 @@ void addStaff(struct Staff staffList[], int* numStaff) {
 	}
 	fflush(stdin);
 
-	printf("Enter Password: ");
+	printf("Enter Password (minimum %d characters): ", MIN_PASSWORD_LENGTH);
 	scanf("%s", newStaff.password);
 	fflush(stdin);
 
+	if (strlen(newStaff.password) < MIN_PASSWORD_LENGTH) {
+		printf("Password is too short. Please enter a password with at least %d characters.\n", MIN_PASSWORD_LENGTH);
+	}
 
-	printf("Enter Recovery Email: ");
+	printf("Enter Recovery Email (must be a Gmail address): ");
 	scanf("%s", newStaff.recovery);
 	fflush(stdin);
+
+	if (strstr(newStaff.recovery, expected_suffix) == NULL) {
+		printf("Recovery email must be a Gmail address.\n");
+	}
 
 	printf("Enter Position: ");
 	scanf("%s", newStaff.position);
@@ -2027,17 +2131,35 @@ void addStaff(struct Staff staffList[], int* numStaff) {
 	printf("%-10s %-20s %-20s %-20s %-20s %-20s\n", "ID", "Name", "Position", "Role", "Recovery Email", "Password");
 
 	staffList[*numStaff] = newStaff;
+
+
+	//for (int i = 0; i < *numStaff; i++) {
+	fprintf(fp, "%s %s %s %s %s %s\n", staffList[*numStaff].id, staffList[*numStaff].name, staffList[*numStaff].position, staffList[*numStaff].role, staffList[*numStaff].recovery, staffList[*numStaff].password);
+	//}
 	(*numStaff)++;
 
-
-	for (int i = 0; i < *numStaff; i++) {
-		fprintf(fp, "%s %s %s %s %s %s\n", staffList[i].id, staffList[i].name, staffList[i].position, staffList[i].role, staffList[i].recovery, staffList[i].password);
-	}
 	fclose(fp);
 }
 
 void displayStaff(struct Staff staffList[], int numStaff) {
 	FILE* fp = fopen("stafftxt.txt", "r");
+	printf("Enter password to display staff list: ");
+	char password[20];
+	scanf("%s", password);
+
+	// Check if password is all digits
+	for (int i = 0; i < strlen(password); i++) {
+		if (!isdigit(password[i])) {
+			printf("Password must be all digits. Access denied.\n");
+			return;
+		}
+	}
+
+	if (strcmp(password, "07151213") != 0) {
+		printf("Incorrect password. Access denied.\n");
+		return;
+	}
+
 	printf("=== Staff List ===\n");
 
 	if (fp == NULL) {
@@ -2045,42 +2167,45 @@ void displayStaff(struct Staff staffList[], int numStaff) {
 		return;
 	}
 
-	printf("%-10s %-20s %-20s %-20s %-20s\n", "ID", "Name", "Position", "Role", "Recovery Email");
+	printf("%-10s %-20s %-20s %-20s %-20s %-20s\n", "ID", "Name", "Position", "Role", "Recovery Email", "Password");
 
 	char line[100];
 	while (fgets(line, sizeof(line), fp) != NULL) {
 		char id[7], name[50], password[20], recovery[20], position[20], role[20];
-		sscanf(line, "%s %s %s %s %s\n", id, name, position, role, recovery);
-		printf("%-10s %-20s %-20s %-20s %-20s\n", id, name, position, role, recovery);
+		sscanf(line, "%s %s %s %s %s %s\n", id, name, position, role, recovery, password);
+		printf("%-10s %-20s %-20s %-20s %-20s %-20s\n", id, name, position, role, recovery, password);
 	}
 
 	fclose(fp);
 }
 
+
+
 void generateReport(struct Staff staffList[], int numStaff) {
 	FILE* fp = fopen("stafftxt.txt", "r");
-	printf("==================================== Staff Report ====================================\n");
+	printf("========================== Basic Staff Information ==========================\n");
 
 	if (fp == NULL) {
 		printf("Error: Unable to open file.\n");
 		return;
 	}
 
-	printf("+------+----------------------+----------------------+----------------------+----------------------+\n");
-	printf("| %-4s | %-20s | %-20s | %-20s | %-20s |\n", "ID", "Name", "Position", "Role", "Recovery Email");
-	printf("+------+----------------------+----------------------+----------------------+----------------------+\n");
+	printf("+------+----------------------+----------------------+----------------------+\n");
+	printf("| %-4s | %-20s | %-20s | %-20s |\n", "ID", "Name", "Position", "Role");
+	printf("+------+----------------------+----------------------+----------------------+\n");
 
 	char line[100];
 	while (fgets(line, sizeof(line), fp) != NULL) {
-		char id[7], name[50], password[20], recovery[20], position[20], role[20];
-		sscanf(line, "%s %s %s %s %s\n", id, name, position, role, recovery);
-		printf("| %-4s | %-20s | %-20s | %-20s | %-20s |\n", id, name, position, role, recovery);
-		printf("+------+----------------------+----------------------+----------------------+----------------------+\n");
+		char id[7], name[50], position[20], role[20];
+		sscanf(line, "%s %s %s %s", id, name, position, role);
+		printf("| %-4s | %-20s | %-20s | %-20s |\n", id, name, position, role);
+		printf("+------+----------------------+----------------------+----------------------+\n");
 	}
 
 	fclose(fp);
 	return;
 }
+
 
 
 
