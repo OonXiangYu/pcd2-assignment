@@ -5,6 +5,8 @@
 #pragma warning (disable:4996)
 
 #define MAX_STAFF 100
+#define MIN_PASSWORD_LENGTH 8
+
 
 struct Staff {
     char id[7];
@@ -21,7 +23,6 @@ void generateReport(struct Staff staffList[], int numStaff);
 void editStaff(struct Staff staffList[], int numStaff);
 void checkPassword(struct Staff staffList[], int numStaff);
 void searchStaff(struct Staff staffList[], int numStaff);
-
 
 
 int main() {
@@ -44,7 +45,7 @@ int main() {
 
         // Input validation
         while (scanf("%d", &choice) != 1 || choice < 1 || choice > 7) {
-            printf("Invalid choice, please enter a number between 1 and 7: ");
+            printf("Invalid choice, please enter a number between 1 and 8: ");
             fflush(stdin);
         }
 
@@ -73,6 +74,8 @@ int main() {
             printf("Exiting program.\n");
             exit(0);
             break;
+       
+
         default:
             printf("Invalid choice, please try again.\n");
         }
@@ -86,6 +89,8 @@ int main() {
 
 void addStaff(struct Staff staffList[], int* numStaff) {
     struct Staff newStaff;
+    char expected_suffix[] = "@gmail.com";
+
 
     FILE* fp = fopen("stafftxt.txt", "a");
     printf("Enter id : ");
@@ -108,81 +113,109 @@ void addStaff(struct Staff staffList[], int* numStaff) {
     }
     fflush(stdin);
 
-    printf("Enter Password: ");
+    printf("Enter Password (minimum %d characters): ", MIN_PASSWORD_LENGTH);
     scanf("%s", newStaff.password);
     fflush(stdin);
-    
 
-    printf("Enter Recovery Email: ");
+    if (strlen(newStaff.password) < MIN_PASSWORD_LENGTH) {
+        printf("Password is too short. Please enter a password with at least %d characters.\n", MIN_PASSWORD_LENGTH);
+    }
+
+    printf("Enter Recovery Email (must be a Gmail address): ");
     scanf("%s", newStaff.recovery);
     fflush(stdin);
-    
+
+    if (strstr(newStaff.recovery, expected_suffix) == NULL) {
+        printf("Recovery email must be a Gmail address.\n");
+    }
+
     printf("Enter Position: ");
     scanf("%s", newStaff.position);
     fflush(stdin);
-    
+
 
     printf("Enter Role: ");
     scanf("%s", newStaff.role);
     fflush(stdin);
-    
-    printf("%-10s %-20s %-20s %-20s %-20s %-20s\n", "ID", "Name", "Position", "Role", "Recovery Email","Password");
+
+    printf("%-10s %-20s %-20s %-20s %-20s %-20s\n", "ID", "Name", "Position", "Role", "Recovery Email", "Password");
 
     staffList[*numStaff] = newStaff;
+
+
+    //for (int i = 0; i < *numStaff; i++) {
+    fprintf(fp, "%s %s %s %s %s %s\n", staffList[*numStaff].id, staffList[*numStaff].name, staffList[*numStaff].position, staffList[*numStaff].role, staffList[*numStaff].recovery, staffList[*numStaff].password);
+    //}
     (*numStaff)++;
-    
-    
-    for (int i = 0; i < *numStaff; i++) {
-        fprintf(fp, "%s %s %s %s %s %s\n", staffList[i].id, staffList[i].name, staffList[i].position, staffList[i].role, staffList[i].recovery, staffList[i].password);
-    }
+
     fclose(fp);
 }
 
 void displayStaff(struct Staff staffList[], int numStaff) {
-        FILE* fp = fopen("stafftxt.txt", "r");
-        printf("=== Staff List ===\n");
+    FILE* fp = fopen("stafftxt.txt", "r");
+    printf("Enter password to display staff list: ");
+    char password[20];
+    scanf("%s", password);
 
-        if (fp == NULL) {
-            printf("Error: Unable to open file.\n");
+    // Check if password is all digits
+    for (int i = 0; i < strlen(password); i++) {
+        if (!isdigit(password[i])) {
+            printf("Password must be all digits. Access denied.\n");
             return;
         }
-
-        printf("%-10s %-20s %-20s %-20s %-20s\n", "ID", "Name", "Position", "Role", "Recovery Email");
-
-        char line[100];
-        while (fgets(line, sizeof(line), fp) != NULL) {
-            char id[7], name[50], password[20], recovery[20], position[20], role[20];
-            sscanf(line, "%s %s %s %s %s\n", id, name, position, role, recovery);
-            printf("%-10s %-20s %-20s %-20s %-20s\n", id, name, position, role, recovery);
-        }
-
-        fclose(fp);
     }
 
-void generateReport(struct Staff staffList[], int numStaff) {
-    FILE* fp = fopen("stafftxt.txt", "r");
-    printf("==================================== Staff Report ====================================\n");
+    if (strcmp(password, "07151213") != 0) {
+        printf("Incorrect password. Access denied.\n");
+        return;
+    }
+
+    printf("=== Staff List ===\n");
 
     if (fp == NULL) {
         printf("Error: Unable to open file.\n");
         return;
     }
 
-    printf("+------+----------------------+----------------------+----------------------+----------------------+\n");
-    printf("| %-4s | %-20s | %-20s | %-20s | %-20s |\n", "ID", "Name", "Position", "Role", "Recovery Email");
-    printf("+------+----------------------+----------------------+----------------------+----------------------+\n");
+    printf("%-10s %-20s %-20s %-20s %-20s %-20s\n", "ID", "Name", "Position", "Role", "Recovery Email", "Password");
 
     char line[100];
     while (fgets(line, sizeof(line), fp) != NULL) {
         char id[7], name[50], password[20], recovery[20], position[20], role[20];
-        sscanf(line, "%s %s %s %s %s\n", id, name, position, role, recovery);
-        printf("| %-4s | %-20s | %-20s | %-20s | %-20s |\n", id, name, position, role, recovery);
-        printf("+------+----------------------+----------------------+----------------------+----------------------+\n");
+        sscanf(line, "%s %s %s %s %s %s\n", id, name, position, role, recovery, password);
+        printf("%-10s %-20s %-20s %-20s %-20s %-20s\n", id, name, position, role, recovery, password);
+    }
+
+    fclose(fp);
+}
+
+
+
+void generateReport(struct Staff staffList[], int numStaff) {
+    FILE* fp = fopen("stafftxt.txt", "r");
+    printf("========================== Basic Staff Information ==========================\n");
+
+    if (fp == NULL) {
+        printf("Error: Unable to open file.\n");
+        return;
+    }
+
+    printf("+------+----------------------+----------------------+----------------------+\n");
+    printf("| %-4s | %-20s | %-20s | %-20s |\n", "ID", "Name", "Position", "Role");
+    printf("+------+----------------------+----------------------+----------------------+\n");
+
+    char line[100];
+    while (fgets(line, sizeof(line), fp) != NULL) {
+        char id[7], name[50], position[20], role[20];
+        sscanf(line, "%s %s %s %s", id, name, position, role);
+        printf("| %-4s | %-20s | %-20s | %-20s |\n", id, name, position, role);
+        printf("+------+----------------------+----------------------+----------------------+\n");
     }
 
     fclose(fp);
     return;
 }
+
 
 
 
@@ -291,37 +324,40 @@ void checkPassword(struct Staff staffList[], int numStaff) {
 }
 
 void searchStaff(struct Staff staffList[], int numStaff) {
-    
-        char searchId[7];
-        int found = 0;
 
-        printf("Enter staff ID to search: ");
-        scanf("%s", searchId);
+    char searchId[7];
+    int found = 0;
 
-        FILE* fp = fopen("stafftxt.txt", "r");
-        if (fp == NULL) {
-            printf("Error: Unable to open file.\n");
-            return;
+    printf("Enter staff ID to search: ");
+    scanf("%s", searchId);
+
+    FILE* fp = fopen("stafftxt.txt", "r");
+    if (fp == NULL) {
+        printf("Error: Unable to open file.\n");
+        return;
+    }
+
+    printf("=== Search Results ===\n");
+    printf("%-10s %-20s %-20s %-20s %-20s\n", "ID", "Name", "Position", "Role", "Recovery Email");
+
+    char line[100];
+    while (fgets(line, sizeof(line), fp) != NULL) {
+        char id[7], name[50], password[20], recovery[20], position[20], role[20];
+        sscanf(line, "%s %s %s %s %s\n", id, name, position, role, recovery);
+        if (strcmp(id, searchId) == 0) {
+            printf("%-10s %-20s %-20s %-20s %-20s\n", id, name, position, role, recovery);
+            found = 1;
+            break;
         }
+    }
 
-        printf("=== Search Results ===\n");
-        printf("%-10s %-20s %-20s %-20s %-20s\n", "ID", "Name", "Position", "Role", "Recovery Email");
+    if (!found) {
+        printf("Staff ID '%s' not found.\n", searchId);
+    }
 
-        char line[100];
-        while (fgets(line, sizeof(line), fp) != NULL) {
-            char id[7], name[50], password[20], recovery[20], position[20], role[20];
-            sscanf(line, "%s %s %s %s %s\n", id, name, position, role, recovery);
-            if (strcmp(id, searchId) == 0) {
-                printf("%-10s %-20s %-20s %-20s %-20s\n", id, name, position, role, recovery);
-                found = 1;
-                break;
-            }
-        }
+    fclose(fp);
 
-        if (!found) {
-            printf("Staff ID '%s' not found.\n", searchId);
-        }
-
-        fclose(fp);
-   
 }
+
+
+
